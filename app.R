@@ -319,7 +319,12 @@ server <- function(input, output,session) {
         #change first two colnames to more meaningful names
         colnames(blast_relevant_tax_and_stats)[1:2]=c("identity","hit")
         #now order like original blast output
-        row.names(blast_relevant_tax_and_stats)=blast_relevant_tax_and_stats[,2]
+    ##CHANGED
+        #row.names(blast_relevant_tax_and_stats)=blast_relevant_tax_and_stats[,2]
+        #this code allows multiple hits between a query and a reference sequence to appear in a dataframe
+        row.names(blast_relevant_tax_and_stats)=make.unique(as.character(blast_relevant_tax_and_stats[,2]),sep = "_")
+        
+        
         blast_relevant_tax_and_stats=blast_relevant_tax_and_stats[blast_capture_df$blast_capture_02,]
         #add colnames to full blast output as we want to return this too
         colnames(blast_capture_df)= c("subject id","% identity","alignment length","mismatches","gap opens","q.start","q.end","s.start","s.end","evalue","bit score")
@@ -485,6 +490,8 @@ server <- function(input, output,session) {
       if(length(s)){
       #get OTU from  run_sequence output     
         abund=query_output$OTU_abundance[,s,drop=FALSE]
+        #get ASV name from the colname
+        colnames(abund)[1]=strsplit(colnames(abund)[1],"\\.")[[1]][1]
         #if otu has occupancy of  greater than 30
         # if(length(which(abund!=0))>20){
         #merge with env
@@ -519,6 +526,7 @@ server <- function(input, output,session) {
       if(length(s)){
         #get OTU from  run_sequence output     
         abund=query_output$OTU_abundance[,s,drop=FALSE]
+        colnames(abund)[1]=strsplit(colnames(abund)[1],"\\.")[[1]][1]
         #merge with env
         abund_env=merge(abund,env,by.x=0,by.y=1)
         #order df by ph
