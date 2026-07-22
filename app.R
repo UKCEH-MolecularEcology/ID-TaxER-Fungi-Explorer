@@ -357,6 +357,9 @@ server <- function(input, output,session) {
   tax.comparison <- function(query){
       #check query isnt empty
     if (query!=""){ 
+      #within our database spaces are denoted with an underscore
+      #therefore if query includes spaces we will replace them with underscore prior to query
+      query=gsub(" ","_",query)
       #search across all taconomic fields apart from kingdom to find all partial string matches
         SQL_command=paste0("SELECT * FROM fungal_otu_attributes.fungal_taxonomy AS tx
           WHERE EXISTS (
