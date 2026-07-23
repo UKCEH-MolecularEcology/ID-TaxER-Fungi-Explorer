@@ -172,7 +172,7 @@ ui <- fluidPage(
 #Taxonomy input Input    
      textInput(inputId = "mytaxonomy",label=HTML("Please enter a taxonomic name<br>
        <span style='font-size: 0.9em; color: #90A968;'>
-     Taxonomic names are searched at all levels of the taxonomic hierarchy. Outputs from the taxonomic search are sorted in descending order of abundance.</span>"
+     Taxonomic names are searched at all levels of the taxonomic hierarchy. Outputs from the taxonomic search are sorted in descending order of abundance by default.</span>"
      ),value="",width = 10000, placeholder = ''),
      br(),
      actionButton("taxonomysearch", "Search",style="color: #000000; background-color:#90a968 ;border-color:#90a968 "),
