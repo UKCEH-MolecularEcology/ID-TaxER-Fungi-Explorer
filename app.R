@@ -88,9 +88,11 @@ ui <- fluidPage(
         style = "height:131px;",
        ),      
 #buttons with styling
-      fluidRow(style='padding-left:45px;padding-top:-3px',actionButton("more_info_button", "More Information",icon=icon("info-circle",style = "color:#f5f9f7"), style="color: #000000; background-color:#c6d3b4; border-color: #c6d3b4;",width=210)),
-      fluidRow(style='padding-left:45px;padding-top:30px',actionButton("bacteria_button", "  ID-TaxER-Bacteria  ",icon=icon("bacteria",style = "color:#f5f9f7;"),onclick ="window.open('https://shiny-apps.ceh.ac.uk/ID-TaxER/', '_blank')",  style="color: #000000; background-color:#c6d3b4; border-color: #c6d3b4;",width=210)),
-      fluidRow(style='padding-left:45px;padding-top:30px',actionButton("github_button", "  Github  ",icon=icon("github",style = "color:#f5f9f7;"),onclick ="window.open('https://github.com/UKCEH-MolecularEcology/ID-TaxER-Fungi-Explorer', '_blank')",   style="color: #000000; background-color:#c6d3b4; border-color: #c6d3b4;",width=210),
+      fluidRow(style='padding-left:45px;padding-top:-1px',actionButton("more_info_button", "More Information",icon=icon("info-circle",style = "color:#f5f9f7"), style="color: #000000; background-color:#c6d3b4; border-color: #c6d3b4;",width=210)),
+      fluidRow(style='padding-left:45px;padding-top:7px',actionButton("bacteria_button", "  ID-TaxER-Bacteria  ",icon=icon("bacteria",style = "color:#f5f9f7;"),onclick ="window.open('https://shiny-apps.ceh.ac.uk/ID-TaxER/', '_blank')",  style="color: #000000; background-color:#c6d3b4; border-color: #c6d3b4;",width=210)),
+      fluidRow(style='padding-left:45px;padding-top:7px',actionButton("github_button", " UKCEH Countryside Survey  ",icon=icon("seedling",style = "color:#f5f9f7;"),onclick ="window.open('https://www.ceh.ac.uk/our-science/projects/countryside-survey', '_blank')",   style="color: #000000; background-color:#c6d3b4; border-color: #c6d3b4;",width=210),
+),
+      fluidRow(style='padding-left:45px;padding-top:7px',actionButton("github_button", "  Github  ",icon=icon("github",style = "color:#f5f9f7;"),onclick ="window.open('https://github.com/UKCEH-MolecularEcology/ID-TaxER-Fungi-Explorer', '_blank')",   style="color: #000000; background-color:#c6d3b4; border-color: #c6d3b4;",width=210),
   )), 
 #second column with title panel and main content- e.g output tables plots etc
      column(width=8,
