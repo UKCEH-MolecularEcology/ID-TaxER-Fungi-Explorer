@@ -131,9 +131,9 @@ ui <- fluidPage(
 #tags$h is heading, tags$p is paragraph etc , tags$b is bold etc more on this here https://shiny.rstudio.com/articles/tag-glossary.html            
   shinyjs::hidden(div(id="more_info",
     tags$h4(tags$b("Summary")),
-    tags$p( "This app provides an interface to explore potential soil habitat preferences of fungal taxa derived from high-throughput sequencing data of a partial fragment from the Internal transcribed spacer region (ITS2) of the rRNA gene operon. Sequence data was processed using DADA2 (Callahan et al. 2016) using the ITS pipeline workflow. Query sequences are blasted against ASV (amplicon sequence variant) sequences obtained from a large soil survey conducted across Britain (the Countryside Survey). Each sequence in the database is linked to taxonomic assignments as well as environmentally derived information about that ASV. Results are displayed as an interactive table of hits with percentage match to a CS sequence, and associated taxonomy (annotated using the UNITE version 9 All Eukaryotes database (Nilsson et al. 2018)). Upon selecting a hit, habitat preferences and spatial distribution are displayed (currently Britain only)."),
+    tags$p( "This app provides an interface to explore potential soil habitat preferences of fungal taxa derived from high-throughput sequencing data of a partial fragment from the Internal transcribed spacer region (ITS2) of the rRNA gene operon. Sequence data was processed using DADA2 (Callahan et al. 2016) using the ITS pipeline workflow. Query sequences are blasted against ASV (amplicon sequence variant) sequences obtained from a large soil survey conducted across Britain (the Countryside Survey). Each sequence in the database is linked to taxonomic assignments as well as environmentally derived information about that ASV. Results are displayed as an interactive table of hits with percentage match to a CS sequence, and associated taxonomy (annotated using the UNITE version 9 All Eukaryotes database (Nilsson et al. 2018)). Upon selecting a hit, habitat/ pH preferences and a spatial distribution is displayed (currently Britain only)."),
     tags$h4(tags$b("Limitations")),
-    tags$p("The database encompasses the ITS2 of the ITS region, amplified with fITS7f and ITS4R (Ihrmark et al. 2012) primers. Queries which do not cover this region will obviously give incorrect results, and additionally taxa poorly amplified with these primers will be under represented. Importantly this tool is based on homology mapping to a portion of the conserved ITS rRNA gene, and so all the usual limitations apply regarding accuracy of taxonomic (and habitat preference) assignment. It is therefore for research purposes only."),
+    tags$p("The database encompasses the ITS2 of the ITS region, amplified with fITS7f and ITS4R (Ihrmark et al. 2012) primers. Sequence search queries which do not cover this region will obviously give incorrect results, and additionally taxa poorly amplified with these primers will be under represented. Importantly this tool is based on homology mapping to a portion of the conserved ITS rRNA gene, and so all the usual limitations apply regarding accuracy of taxonomic (and habitat preference) assignment. It is therefore for research purposes only."),
     br(),
     tags$p("Callahan BJ, McMurdie PJ, Rosen MJ, Han AW, Johnson AJ, Holmes SP. DADA2: High-resolution sample inference from Illumina amplicon data. Nat Methods. 2016 Jul;13(7):581-3. doi: 10.1038/nmeth.3869. Epub 2016 May 23. PMID: 27214047; PMCID: PMC4927377."),
     tags$p("Ihrmark, K., Bödeker, I.T., Cruz-Martinez, K., Friberg, H., Kubartova, A., Schenck, J., Strid, Y., Stenlid, J., Brandström-Durling, M., Clemmensen, K.E. and Lindahl, B.D., 2012. New primers to amplify the fungal ITS2 region–evaluation by 454-sequencing of artificial and natural communities. FEMS microbiology ecology, 82(3), pp.666-677."),
@@ -146,7 +146,13 @@ ui <- fluidPage(
     tabPanel(title="Sequence Search",
      br(),
 #Sequence Input    
-     textInput(inputId = "mysequence",label="Please enter a sequence",value="",width = 10000, placeholder = ''),
+     textInput(inputId = "mysequence",
+     label=HTML("Please enter a sequence <br>
+       <span style='font-size: 0.9em; color: #90A968; font-weight:bold;'>
+     Query sequences must have overlap with the ITS2 region generated using the fITS7f and ITS4R primer pair.</span>"
+     ),
+     value="",
+     width = 10000, placeholder = ''),
 #add empty line
      br(),
 #buttons
@@ -164,7 +170,10 @@ ui <- fluidPage(
     tabPanel(title="Taxonomy Search",
      br(),
 #Taxonomy input Input    
-     textInput(inputId = "mytaxonomy",label="Please enter a taxonomic name",value="",width = 10000, placeholder = ''),
+     textInput(inputId = "mytaxonomy",label=HTML("Please enter a taxonomic name<br>
+       <span style='font-size: 0.9em; color: #90A968; font-weight:bold;'>
+     Taxonomic names are searched at all levels of the taxonomic hierarchy. Outputs from the taxonomic search are sorted in descending order of abundance.</span>"
+     ),value="",width = 10000, placeholder = ''),
      br(),
      actionButton("taxonomysearch", "Search",style="color: #000000; background-color:#90a968 ;border-color:#90a968 "),
      actionButton("clearTaxonomyInput", "Clear Input",style="color: #000000; background-color:#c6d4b4 ;border-color:#c6d4b4 " ),
@@ -184,7 +193,11 @@ ui <- fluidPage(
   fluidRow(
     column(width=8,br(),
     br(),
-    HTML('<center><h4>Top Hits</h4></center>'),
+    HTML("<center><h4>Top Hits</h4></center>
+         <span style='font-size: 0.9em; color: #90A968; font-weight:bold;'>
+           Please select a row for taxonomic specific outputs/ visualisations.</span>"
+         
+         ),
 #box basically creates a white box around the output
 #only works in shiny dashboards not fluid page etc
 #some dataTable aesthetic options (e.g number of rows to display/pagination of large tables, colnames displayed etc) are controlled from renderDataTable in server.R                 
@@ -369,7 +382,7 @@ server <- function(input, output,session) {
         SQL_command=paste0("SELECT * FROM fungal_otu_attributes.fungal_taxonomy AS tx
           WHERE EXISTS (
             SELECT 1
-            FROM unnest(ARRAY[tx.phylum, tx.class, tx.order,tx.family,tx.genus,tx.species]) AS x(col)
+            FROM unnest(ARRAY[tx.kingdom,tx.phylum, tx.class, tx.order,tx.family,tx.genus,tx.species]) AS x(col)
             WHERE col ILIKE '%",query,"%'
             );"
         )
