@@ -336,8 +336,19 @@ server <- function(input, output,session) {
         #row.names(blast_relevant_tax_and_stats)=blast_relevant_tax_and_stats[,2]
         #this code allows multiple hits between a query and a reference sequence to appear in a dataframe
         row.names(blast_relevant_tax_and_stats)=make.unique(as.character(blast_relevant_tax_and_stats[,2]),sep = "_")
-        
-        
+        #get numeric version of occupancy
+        blast_relevant_tax_and_stats$occupancy_proportion_numeric=as.numeric(gsub("%.*","",blast_relevant_tax_and_stats$occupancy_proportion))
+        #make original version of occupancy a factor and assign levels in descending numeric order based on new numeric column
+        blast_relevant_tax_and_stats<-blast_relevant_tax_and_stats[order(-blast_relevant_tax_and_stats$occupancy_proportion_numeric),]
+        blast_relevant_tax_and_stats$occupancy_proportion=factor(blast_relevant_tax_and_stats$occupancy_proportion,levels= unique(blast_relevant_tax_and_stats$occupancy_proportion))
+        blast_relevant_tax_and_stats$occupancy_proportion_numeric=NULL
+        #get numeric version of abundance rank
+        blast_relevant_tax_and_stats$abundance_rank_numeric= as.numeric(gsub("/.*","",blast_relevant_tax_and_stats$abundance_rank))
+        #make original version of abundance rank a factor and assign levels in descending numeric order based on new numeric column
+        blast_relevant_tax_and_stats<-blast_relevant_tax_and_stats[order(blast_relevant_tax_and_stats$abundance_rank_numeric),]
+        blast_relevant_tax_and_stats$abundance_rank=factor(blast_relevant_tax_and_stats$abundance_rank,levels= unique(blast_relevant_tax_and_stats$abundance_rank))
+        blast_relevant_tax_and_stats$abundance_rank_numeric=NULL
+        #put in blast output order 
         blast_relevant_tax_and_stats=blast_relevant_tax_and_stats[blast_capture_df$blast_capture_02,]
         #add colnames to full blast output as we want to return this too
         colnames(blast_capture_df)= c("subject id","% identity","alignment length","mismatches","gap opens","q.start","q.end","s.start","s.end","evalue","bit score")
@@ -392,9 +403,19 @@ server <- function(input, output,session) {
           #tx and abs are SQL aliases for taxonomic and abundance_stats tables to reduce length of command
             SQL_command=paste("SELECT tx.*, abs.abundance_rank, abs.occupancy_proportion FROM fungal_otu_attributes.fungal_taxonomy tx JOIN fungal_otu_attributes.fungal_abundance_stats abs ON tx.hit = abs.hit WHERE tx.hit IN ('",paste(relevant_tax$hit,collapse="', '"),"');",sep="")
             relevant_tax_and_stats=dbGetQuery(con, SQL_command)
+            #get numeric version of occupancy
+            relevant_tax_and_stats$occupancy_proportion_numeric=as.numeric(gsub("%.*","",relevant_tax_and_stats$occupancy_proportion))
+            #make original version of occupancy a factor and assign levels in descending numeric order based on new numeric column
+            relevant_tax_and_stats<-relevant_tax_and_stats[order(-relevant_tax_and_stats$occupancy_proportion_numeric),]
+            relevant_tax_and_stats$occupancy_proportion=factor(relevant_tax_and_stats$occupancy_proportion,levels= unique(relevant_tax_and_stats$occupancy_proportion))
+            relevant_tax_and_stats$occupancy_proportion_numeric=NULL
+            #get numeric version of abundance rank
             relevant_tax_and_stats$abundance_rank_numeric= as.numeric(gsub("/.*","",relevant_tax_and_stats$abundance_rank))
+            #make original version of abundance rank a factor and assign levels in descending numeric order based on new numeric column
             relevant_tax_and_stats<-relevant_tax_and_stats[order(relevant_tax_and_stats$abundance_rank_numeric),]
+            relevant_tax_and_stats$abundance_rank=factor(relevant_tax_and_stats$abundance_rank,levels= unique(relevant_tax_and_stats$abundance_rank))
             relevant_tax_and_stats$abundance_rank_numeric=NULL
+            #lets leave table in abundance rank order this makes sense for the taxonomic search
           #get abundance data for all otus here , could do this at point when rows are selected (e.g in output$AVC_box_plot code) but as a slow command this would slow things down as navigating the app which would be frustrating
           #could consider getting map data within this function too
           #need to excute join command as data in two parts
