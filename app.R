@@ -508,7 +508,7 @@ server <- function(input, output,session) {
           spplot(r_object_map[[1]]["var1.pred"],at=unlist(r_object_map[2:11]),xlab=toString(OTU),ylab.pos=c(5,10,100),sp.layout=list("sp.lines",uk.line,lwd=2,col="black"))
         }
       }   
-    })
+    },res=90)
  ###AVCPlot
   output$OTU_avc_boxplot = renderPlot({  
     if(last_action() =="seq"){
