@@ -148,7 +148,7 @@ ui <- fluidPage(
 #Sequence Input    
      textInput(inputId = "mysequence",
      label=HTML("Please enter a sequence <br>
-       <span style='font-size: 0.9em; color: #90A968; font-weight:bold;'>
+       <span style='font-size: 0.9em; color: #90A968;'>
      Query sequences must have overlap with the ITS2 region generated using the fITS7f and ITS4R primer pair.</span>"
      ),
      value="",
@@ -171,7 +171,7 @@ ui <- fluidPage(
      br(),
 #Taxonomy input Input    
      textInput(inputId = "mytaxonomy",label=HTML("Please enter a taxonomic name<br>
-       <span style='font-size: 0.9em; color: #90A968; font-weight:bold;'>
+       <span style='font-size: 0.9em; color: #90A968;'>
      Taxonomic names are searched at all levels of the taxonomic hierarchy. Outputs from the taxonomic search are sorted in descending order of abundance.</span>"
      ),value="",width = 10000, placeholder = ''),
      br(),
@@ -194,7 +194,7 @@ ui <- fluidPage(
     column(width=8,br(),
     br(),
     HTML("<center><h4>Top Hits</h4></center>
-         <span style='font-size: 0.9em; color: #90A968; font-weight:bold;'>
+         <span style='font-size: 0.9em; color: #90A968;'>
            Please select a row for taxonomic specific outputs/ visualisations.</span>"
          
          ),
