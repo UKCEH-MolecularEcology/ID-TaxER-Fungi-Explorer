@@ -391,8 +391,10 @@ server <- function(input, output,session) {
       #within our database spaces are denoted with an underscore in the taxonomic hierarchy columns but not in the common names
       #therefore we will have two versions of the query one with spaces and one where spaces are replaced with _
       query2=gsub(" ","_",query)
+      #additional version incase someone has added a space where there is no space
+      query3=gsub(" ","",query)
       #search across all taconomic fields apart from kingdom to find all partial string matches
-      SQL_command=paste0("SELECT * FROM fungal_otu_attributes.fungal_taxonomy_common_name AS tx WHERE EXISTS (SELECT 1 FROM unnest(ARRAY[tx.kingdom,tx.phylum, tx.class, tx.order,tx.family,tx.genus,tx.species,tx.common_name]) AS x(col) WHERE col ILIKE '%",query,"%'OR col ILIKE '%", query2, "%');"
+      SQL_command=paste0("SELECT * FROM fungal_otu_attributes.fungal_taxonomy_common_name AS tx WHERE EXISTS (SELECT 1 FROM unnest(ARRAY[tx.kingdom,tx.phylum, tx.class, tx.order,tx.family,tx.genus,tx.species,tx.common_name]) AS x(col) WHERE col ILIKE '%",query,"%'OR col ILIKE '%", query2,"%'OR col ILIKE '%", query3, "%');"
       )
         relevant_tax=dbGetQuery(con, SQL_command)
           if(nrow(relevant_tax)>1){
