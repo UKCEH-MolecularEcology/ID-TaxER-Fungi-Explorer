@@ -172,9 +172,9 @@ ui <- fluidPage(
     tabPanel(title="Taxonomy Search",
      br(),
 #Taxonomy input Input    
-     textInput(inputId = "mytaxonomy",label=HTML("Please enter a taxonomic name<br>
+     textInput(inputId = "mytaxonomy",label=HTML("Please enter a <b>taxonomic</b> or <b>common name</b><br>
        <span style='font-size: 0.9em; color: #90A968;'>
-     Taxonomic names are searched at all levels of the taxonomic hierarchy. Outputs from the taxonomic search are sorted in descending order of abundance by default.</span>"
+     Taxonomic names are searched at all levels of the taxonomic hierarchy and by common name. Outputs from the taxonomic search are sorted in descending order of abundance by default.</span>"
      ),value="",width = 10000, placeholder = ''),
      br(),
      actionButton("taxonomysearch", "Search",style="color: #000000; background-color:#90a968 ;border-color:#90a968 "),
@@ -326,11 +326,11 @@ server <- function(input, output,session) {
 ###POSTGRES ###         
           #using a join(similar to r merge) to get information in taxonomy and abundance_stats tables using WHERE statement to get relevant ASV/OTUs from blast output
           #tx and abs are SQL aliases for taxonomic and abundance_stats tables to reduce length of command
-        SQL_command=paste("SELECT tx.*, abs.abundance_rank, abs.occupancy_proportion FROM fungal_otu_attributes.fungal_taxonomy tx JOIN fungal_otu_attributes.fungal_abundance_stats abs ON tx.hit = abs.hit WHERE tx.hit IN ('",paste(blast_capture_df$blast_capture_02,collapse="', '"),"');",sep="")
+        SQL_command=paste("SELECT tx.*, abs.abundance_rank, abs.occupancy_proportion FROM fungal_otu_attributes.fungal_taxonomy_common_name tx JOIN fungal_otu_attributes.fungal_abundance_stats abs ON tx.hit = abs.hit WHERE tx.hit IN ('",paste(blast_capture_df$blast_capture_02,collapse="', '"),"');",sep="")
         relevant_tax_and_stats=dbGetQuery(con, SQL_command)
         blast_relevant_tax_and_stats=merge(blast_capture_df,relevant_tax_and_stats,by=1)
         #remove columns we dont want for this table
-        blast_relevant_tax_and_stats=blast_relevant_tax_and_stats[,c(2,1,12:20)]
+        blast_relevant_tax_and_stats=blast_relevant_tax_and_stats[,c(2,1,12:21)]
         #change first two colnames to more meaningful names
         colnames(blast_relevant_tax_and_stats)[1:2]=c("identity","hit")
         #now order like original blast output
@@ -388,22 +388,17 @@ server <- function(input, output,session) {
   tax.comparison <- function(query){
       #check query isnt empty
     if (query!=""){ 
-      #within our database spaces are denoted with an underscore
-      #therefore if query includes spaces we will replace them with underscore prior to query
-      query=gsub(" ","_",query)
+      #within our database spaces are denoted with an underscore in the taxonomic hierarchy columns but not in the common names
+      #therefore we will have two versions of the query one with spaces and one where spaces are replaced with _
+      query2=gsub(" ","_",query)
       #search across all taconomic fields apart from kingdom to find all partial string matches
-        SQL_command=paste0("SELECT * FROM fungal_otu_attributes.fungal_taxonomy AS tx
-          WHERE EXISTS (
-            SELECT 1
-            FROM unnest(ARRAY[tx.kingdom,tx.phylum, tx.class, tx.order,tx.family,tx.genus,tx.species]) AS x(col)
-            WHERE col ILIKE '%",query,"%'
-            );"
-        )
+      SQL_command=paste0("SELECT * FROM fungal_otu_attributes.fungal_taxonomy_common_name AS tx WHERE EXISTS (SELECT 1 FROM unnest(ARRAY[tx.kingdom,tx.phylum, tx.class, tx.order,tx.family,tx.genus,tx.species,tx.common_name]) AS x(col) WHERE col ILIKE '%",query,"%'OR col ILIKE '%", query2, "%');"
+      )
         relevant_tax=dbGetQuery(con, SQL_command)
           if(nrow(relevant_tax)>1){
           #using a join(similar to r merge) to get information in taxonomy and abundance_stats tables using WHERE statement to get relevant ASV/OTUs from blast output
           #tx and abs are SQL aliases for taxonomic and abundance_stats tables to reduce length of command
-            SQL_command=paste("SELECT tx.*, abs.abundance_rank, abs.occupancy_proportion FROM fungal_otu_attributes.fungal_taxonomy tx JOIN fungal_otu_attributes.fungal_abundance_stats abs ON tx.hit = abs.hit WHERE tx.hit IN ('",paste(relevant_tax$hit,collapse="', '"),"');",sep="")
+            SQL_command=paste("SELECT tx.*, abs.abundance_rank, abs.occupancy_proportion FROM fungal_otu_attributes.fungal_taxonomy_common_name tx JOIN fungal_otu_attributes.fungal_abundance_stats abs ON tx.hit = abs.hit WHERE tx.hit IN ('",paste(relevant_tax$hit,collapse="', '"),"');",sep="")
             relevant_tax_and_stats=dbGetQuery(con, SQL_command)
             #get numeric version of occupancy
             relevant_tax_and_stats$occupancy_proportion_numeric=as.numeric(gsub("%.*","",relevant_tax_and_stats$occupancy_proportion))
