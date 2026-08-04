@@ -393,9 +393,11 @@ server <- function(input, output,session) {
       query2=gsub(" ","_",query)
       #additional version incase someone has added a space where there is no space
       query3=gsub(" ","",query)
+      #remove any trailing spaces
+      query4=gsub("^\\s+", "", query)
       #search across all taconomic fields apart from kingdom to find all partial string matches
-      SQL_command=paste0("SELECT * FROM fungal_otu_attributes.fungal_taxonomy_common_name AS tx WHERE EXISTS (SELECT 1 FROM unnest(ARRAY[tx.kingdom,tx.phylum, tx.class, tx.order,tx.family,tx.genus,tx.species,tx.common_name]) AS x(col) WHERE col ILIKE '%",query,"%'OR col ILIKE '%", query2,"%'OR col ILIKE '%", query3, "%');"
-      )
+      SQL_command=paste0("SELECT * FROM fungal_otu_attributes.fungal_taxonomy_common_name AS tx WHERE EXISTS (SELECT 1 FROM unnest(ARRAY[tx.kingdom,tx.phylum, tx.class, tx.order,tx.family,tx.genus,tx.species,tx.common_name]) AS x(col) WHERE col ILIKE '%",query,"%'OR col ILIKE '%", query2,"%'OR col ILIKE '%", query3, "%'OR col ILIKE '%", query4, "%');")
+      
         relevant_tax=dbGetQuery(con, SQL_command)
           if(nrow(relevant_tax)>1){
           #using a join(similar to r merge) to get information in taxonomy and abundance_stats tables using WHERE statement to get relevant ASV/OTUs from blast output
