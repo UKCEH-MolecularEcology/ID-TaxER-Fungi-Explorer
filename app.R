@@ -72,11 +72,11 @@ ui <- fluidPage(
        background-color: #c6d3b4 !important;
         color: #000000 !important;
        }
-       /*login box colour */
-      .well {
-        background-color: #c6d3b4;
-        color: white;
-      }
+      # /*login box colour */
+      #.well {
+      #  background-color: #c6d3b4;
+      #  color: white;
+      #}
     "))
   ),
 
@@ -102,28 +102,28 @@ ui <- fluidPage(
          HTML("<span style='font-size:24px;color:#7FA650;font-weight:600;position:relative;top:-2.5px;margin-right:5px;'>ID‑TaxER</span>
               <span style='font-size:36px;color:#000000;font-weight:600;'>  Fungi Explorer </span>
               <i class='fa fa-search' style='font-size:36px;color:#000000;'></i>
-        "),
-       div(
+        ")#,
+       #div(
          #logout button
-         style = "position:absolute;right:-50px;top:0px;",
-         shinyauthr::logoutUI(id = "logout",style = "color: black; background-color: #dfefea; border-color: #dfefea;")
-         )
+         #style = "position:absolute;right:-50px;top:0px;",
+         #shinyauthr::logoutUI(id = "logout",style = "color: black; background-color: #dfefea; border-color: #dfefea;")
+         #)
        ),
   # login style
-  tags$style(".login-ui label { color: #000000; }
-            .login-ui .btn-default {
-              background-color: #f5f9f7;
-              border-color: #ebf5f4;
-              color: #000000 !important;
-        }
-  "),
-  div(class = "login-ui", shinyauthr::loginUI(id = "login",title="")),
+  #tags$style(".login-ui label { color: #000000; }
+  #          .login-ui .btn-default {
+  #            background-color: #f5f9f7;
+   #           border-color: #ebf5f4;
+   #           color: #000000 !important;
+   #     }
+  #"),
+  #div(class = "login-ui", shinyauthr::loginUI(id = "login",title="")),
   
   ###LOGINCODE
-  conditionalPanel(
-  condition = "output.user_auth == true",
-  width = 8, 
-          style="padding-left:80px; padding-right:0px;",
+ #conditionalPanel(
+  #condition = "output.user_auth == true",
+  #width = 8, 
+   #       style="padding-left:80px; padding-right:0px;",
           
 #MORE INFO
 #  Hidden more information section using shinyjs
@@ -241,12 +241,14 @@ ui <- fluidPage(
   ),#link to privacy privacy
   hr(style = "border-color: #f5f9f7;"),
   div(style = "text-align: center;",
-    img(src="logos_combined2.png",style="height: 80px")),
-    br(),
+    img(src="UKCEH_NatCapUK_Black.png",style="height: 100px"),
+    #),
+    br(),br(),
   #hr(style = "border-color: #f5f9f7;"),
-    div(style = "text-align: center;", a("UKCEH Privacy Policy", href = "https://www.ceh.ac.uk/privacy-notice",class="custom_link")),
+    #div(style = "text-align: center;", 
+  span(style = "padding-left:70px;",a("  UKCEH Privacy Policy", href = "https://www.ceh.ac.uk/privacy-notice",class="custom_link"))),
     #end of conditional panel
-    )
+    #)
     #end of second column
     )
 ))
@@ -254,25 +256,25 @@ ui <- fluidPage(
 
 server <- function(input, output,session) {
   #LOGINCODE (shiny authorisation not psql)
-  credentials <- shinyauthr::loginServer(
-    id = "login",
-    data = user_base,
-    user_col = user,
-    pwd_col = password,
-    sodium_hashed = TRUE,
-    log_out = reactive(logout_init())
-  )
+ # credentials <- shinyauthr::loginServer(
+  #  id = "login",
+  #  data = user_base,
+  #  user_col = user,
+  #  pwd_col = password,
+  #  sodium_hashed = TRUE,
+ #   log_out = reactive(logout_init())
+ # )
   
-  output$user_auth <- reactive({
-    credentials()$user_auth
-  })
-  outputOptions(output, "user_auth", suspendWhenHidden = FALSE)
+ # output$user_auth <- reactive({
+ #   credentials()$user_auth
+ # })
+  #outputOptions(output, "user_auth", suspendWhenHidden = FALSE)
   
-  # call the logout module with reactive trigger to hide/show
-  logout_init <- shinyauthr::logoutServer(
-    id = "logout",
-    active = reactive(credentials()$user_auth)
-  )
+  ## call the logout module with reactive trigger to hide/show
+  #logout_init <- shinyauthr::logoutServer(
+  #  id = "logout",
+  #  active = reactive(credentials()$user_auth)
+  #)
 #postgres database connection
   con <- dbPool(
     drv = RPostgreSQL::PostgreSQL(max.con=140),
@@ -574,7 +576,7 @@ server <- function(input, output,session) {
                 panel.grid.minor = element_blank(),
                 panel.border = element_blank(),
                 panel.background = element_blank(),
-                plot.margin=margin(t=20,r=20,b=20,l=20,"pt"))+
+                plot.margin=ggplot2::margin(t=20,r=20,b=20,l=20,"pt"))+
           geom_smooth(method = "loess")+
           ylab("pH")+xlab(colnames(abund_env)[2])
       }
